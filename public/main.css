@@ -1,0 +1,18 @@
+@font-face { font-family: nhl; src: url('NHL.ttf'); }
+
+#header {
+    margin-top: 50px;
+}
+
+.statistics {
+    margin-top: 200px;
+}
+
+#team{
+    font-family: nhl;
+    font-size: 400px;
+}
+
+#chooseTeam{
+    margin-top: 50px;
+}
