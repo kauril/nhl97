@@ -17,7 +17,7 @@ fetch('/teams', {method: 'GET'}).then((response) => {
             let team = item.innerHTML;
             team = team.replace(' ', '%20');
             console.log(team);
-            fetch(`http://localhost:3000/team/${team}`, {method: 'GET'}).then((response) => {
+            fetch(`/team/${team}`, {method: 'GET'}).then((response) => {
                 return response.json();
             }).then((json) => {
                 title.innerHTML = "";
