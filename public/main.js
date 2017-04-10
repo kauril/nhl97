@@ -1,4 +1,4 @@
-fetch(`nhl97.jelastic.metropolia.fi/teams`, {method: 'GET'}).then((response) => {
+fetch('/teams', {method: 'GET'}).then((response) => {
     return response.json();
 }).then((json) => {
     const dropDown = document.querySelector('#teamDropdown');
