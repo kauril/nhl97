@@ -1,8 +1,10 @@
-fetch('/teams', {method: 'GET'}).then((response) => {
+fetch('/teams', {
+    method: 'GET'
+}).then((response) => {
     return response.json();
 }).then((json) => {
     const dropDown = document.querySelector('#teamDropdown');
-    for (let item of json){
+    for (let item of json) {
         console.log(item.team);
         const dropDownItem = `<a class="dropdown-item team-item" href="#" value=${item._id}>${item.team}</a>`;
         dropDown.innerHTML += dropDownItem;
@@ -12,12 +14,14 @@ fetch('/teams', {method: 'GET'}).then((response) => {
     const title = document.querySelector('.title');
     const stats = document.querySelector('.stats');
 
-    for(let item of dropDownItems){
+    for (let item of dropDownItems) {
         item.addEventListener('click', () => {
             let team = item.innerHTML;
             team = team.replace(' ', '%20');
             console.log(team);
-            fetch(`/team/${team}`, {method: 'GET'}).then((response) => {
+            fetch(`/team/${team}`, {
+                method: 'GET'
+            }).then((response) => {
                 return response.json();
             }).then((json) => {
                 title.innerHTML = "";
@@ -25,13 +29,13 @@ fetch('/teams', {method: 'GET'}).then((response) => {
                 for (let key in json[0]) {
                     if (json[0].hasOwnProperty(key)) {
 
-                        if (key === 'char'){
+                        if (key === 'teamChar') {
                             const logo = document.querySelector('#team');
                             logo.innerHTML = json[0][key];
                         } else {
-                            if (key === '_id'){
+                            if (key === '_id') {
 
-                            }else {
+                            } else {
                                 console.log(key + " -> " + json[0][key]);
                                 const titleElem = document.createElement('p');
                                 titleElem.innerHTML = key;
@@ -53,6 +57,17 @@ fetch('/teams', {method: 'GET'}).then((response) => {
 }).catch((e) => {
     console.log(e);
 });
+
+const logoutButton = document.querySelector('#logout');
+
+/*logoutButton.addEventListener('click', () => {
+    fetch('/logout', {
+        method: 'GET',
+            credentials: 'include'
+    }).then((response) => {
+        console.log('logout');
+    });
+});*/
 
 
 
@@ -98,6 +113,3 @@ for(let item of dropDown){
         });
     });
 }*/
-
-
-

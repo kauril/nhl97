@@ -5,34 +5,194 @@ const path = require('path');
 const app = express();
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
 mongoose.Promise = global.Promise; //ES6 Promise
 const Schema = mongoose.Schema;
 
-const dataSchema = new Schema({
-    team: {type: String,  required: true},
-    char: {type: String,  required: true},
-    gamesplayed: {type: Number,  required: true},
-    wins: {type: Number,  required: true},
-    loses: {type: Number,  required: true},
-    goalsfor: {type: Number,  required: true},
-    goalsagainst: {type: Number,  required: true},
-    shotsfor: {type: Number,  required: true},
-    shotsagainst: {type: Number,  required: true},
-    overtimes: {type: Number,  required: true},
-    overtimewins: {type: Number,  required: true},
-    overtimeloses: {type: Number,  required: true},
-    shootouts: {type: Number,  required: true},
-    shootoutwins: {type: Number,  required: true},
-    shootoutloses: {type: Number,  required: true},
-    homewins: {type: Number,  required: true},
-    homeloses: {type: Number,  required: true},
-    guestwins: {type: Number,  required: true},
-    guestloses: {type: Number,  required: true}
+const teamSchema = new Schema({
+    team: {
+        type: String,
+        required: true
+    },
+    player: {
+        type: String,
+        required: true
+    },
+    teamChar: {
+        type: String,
+        required: true
+    },
+    gamesPlayed: {
+        type: Number,
+        required: true
+    },
+    wins: {
+        type: Number,
+        required: true
+    },
+    loses: {
+        type: Number,
+        required: true
+    },
+    goalsFor: {
+        type: Number,
+        required: true
+    },
+    goalsAgainst: {
+        type: Number,
+        required: true
+    },
+    shotsFor: {
+        type: Number,
+        required: true
+    },
+    shotsAgainst: {
+        type: Number,
+        required: true
+    },
+    overtimes: {
+        type: Number,
+        required: true
+    },
+    overtimeWins: {
+        type: Number,
+        required: true
+    },
+    overtimeLoses: {
+        type: Number,
+        required: true
+    },
+    shootouts: {
+        type: Number,
+        required: true
+    },
+    shootoutWins: {
+        type: Number,
+        required: true
+    },
+    shootoutLoses: {
+        type: Number,
+        required: true
+    },
+    homeWins: {
+        type: Number,
+        required: true
+    },
+    homeLoses: {
+        type: Number,
+        required: true
+    },
+    guestWins: {
+        type: Number,
+        required: true
+    },
+    guestLoses: {
+        type: Number,
+        required: true
+    }
 });
 
-const Data = mongoose.model('nhl97', dataSchema);
+const gameSchema = new Schema({
+    homeTeam: {
+        type: String,
+        required: true
+    },
+    guestTeam: {
+        type: String,
+        required: true
+    },
+    homeGoals: {
+        type: Number,
+        required: true
+    },
+    guestGoals: {
+        type: Number,
+        required: true
+    },
+    guestShots: {
+        type: Number,
+        required: true
+    },
+    homeShots: {
+        type: Number,
+        required: true
+    },
+    isShootout: {
+        type: Boolean,
+        required: true
+    },
+    isOvertime: {
+        type: Boolean,
+        required: true
+    },
+    date: {
+        type: String,
+        required: true
+    }
+});
 
+const Team = mongoose.model('team', teamSchema);
+const Game = mongoose.model('game', gameSchema);
+
+app.use(cookieParser());
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+
+// Authentication
+passport.use(new LocalStrategy(
+    (username, password, done) => {
+        console.log("before everything?");
+        console.log(process.env.USERNAME);
+        if (username !== process.env.USERNAME || password !== process.env.PASSWORD) {
+            done(null, false, {message: 'Incorrect credentials.'});
+            console.log('failed');
+            return;
+        }
+        console.log('done');
+
+        return done(null, {username: username});
+    }
+));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.post('/login',
+    passport.authenticate('local',
+        {failureRedirect: '/login.html', session: false}),
+    (req, res) => {
+
+        res.cookie('user', req.body.username, {maxAge: 900000, httpOnly: true});
+        console.log('cookie created successfully');
+
+        res.redirect('/index.html');
+    }
+);
+
+app.get('/index.html', (req, res) => {
+    console.log('index')
+    console.log(req.cookies);
+    if (req.cookies.user) {
+        res.sendFile(__dirname +'/public/index.html');
+    } else {
+        res.redirect('/login.html');
+    }
+});
+
+app.get('/logout', (req, res) => {
+    console.log('logout');
+    console.log(res.cookies);
+    console.log(req.cookies);
+    res.clearCookie('user');
+    
+    console.log(res.cookies);
+    console.log(req.cookies);
+    res.redirect('/login.html');
+});
 
 /**
  * @apiDefine ExampleResult
@@ -89,9 +249,9 @@ app.use(bodyParser.json());
  */
 
 
-app.post('/addteam', bodyParser.urlencoded({extend: true}), (req, res) => {
+app.post('/addteam', (req, res) => {
     const newteam = new Data(req.body);
-    newteam.save(function (err) {
+    newteam.save(function(err) {
         if (err) {
             console.log(err);
             res.send(err);
@@ -101,6 +261,190 @@ app.post('/addteam', bodyParser.urlencoded({extend: true}), (req, res) => {
         }
     });
 });
+
+
+
+app.post('/addgame', (req, res) => {
+    console.log(req.body);
+    console.log(req.body.isOvertime);
+    console.log('test');
+
+    //Game resul is added to db
+
+    Game.create(req.body).then(post => {
+
+
+    });
+
+    //Declaring variables to update overtime/shootout data
+
+    let isOvertime = 0;
+    let gameEndedDuringOvertime = 0
+    let isShootout = 0;
+
+    // Checking if game went to overtime...
+
+    if (req.body.isOvertime === 'true') {
+        isOvertime = 1;
+        gameEndedDuringOvertime = 1;
+
+        //...if so checking if there were shootouts
+        if (req.body.isShootout === 'true') {
+            console.log('isShootout')
+            isShootout = 1;
+            gameEndedDuringOvertime = 0;
+        }
+    } else {
+        console.log('noOvertime')
+    }
+
+    //Checking if home team won
+
+    if (req.body.homeGoals > req.body.guestGoals) {
+
+
+        //Updating winning team
+
+        Team.findOneAndUpdate({
+            'team': req.body.homeTeam
+        }, {
+            $inc: {
+                gamesPlayed: 1,
+                wins: 1,
+                homeWins: 1,
+                goalsFor: req.body.homeGoals,
+                goalsAgainst: req.body.guestGoals,
+                shotsFor: req.body.homeShots,
+                shotsAgainst: req.body.guestShots,
+                overtimes: isOvertime,
+                overtimeWins: gameEndedDuringOvertime,
+                shootouts: isShootout,
+                shootoutWins: isShootout
+            }
+        }, {
+            new: true
+        }, (err, data) => {
+            if (err) return handleError(err);
+
+        });
+
+        //Updating losing team
+
+        Team.findOneAndUpdate({
+            'team': req.body.guestTeam
+        }, {
+            $inc: {
+                gamesPlayed: 1,
+                loses: 1,
+                guestLoses: 1,
+                goalsFor: req.body.guestGoals,
+                goalsAgainst: req.body.homeGoals,
+                shotsFor: req.body.guestShots,
+                shotsAgainst: req.body.homeShots,
+                overtimes: isOvertime,
+                overtimeLoses: gameEndedDuringOvertime,
+                shootouts: isShootout,
+                shootoutloses: isShootout
+            }
+        }, {
+            new: true
+        }, (err, data) => {
+            if (err) return handleError(err);
+
+        });
+
+    } else {
+
+        //Winning team is guest team
+        //Updating winning team
+
+        Team.findOneAndUpdate({
+            'team': req.body.guestTeam
+        }, {
+            $inc: {
+                gamesPlayed: 1,
+                wins: 1,
+                guestWins: 1,
+                goalsFor: req.body.guestGoals,
+                goalsAgainst: req.body.homeGoals,
+                shotsFor: req.body.guestShots,
+                shotsAgainst: req.body.homeShots,
+                overtimes: isOvertime,
+                overtimeWins: gameEndedDuringOvertime,
+                shootouts: isShootout,
+                shootoutWins: isShootout
+            }
+        }, {
+            new: true
+        }, (err, data) => {
+            if (err) return handleError(err);
+
+        });
+
+        //Updating losing team
+
+        Team.findOneAndUpdate({
+            'team': req.body.homeTeam
+        }, {
+            $inc: {
+                gamesPlayed: 1,
+                loses: 1,
+                homeLoses: 1,
+                goalsFor: req.body.homeGoals,
+                goalsAgainst: req.body.guestGoals,
+                shotsFor: req.body.homeShots,
+                shotsAgainst: req.body.guestShots,
+                overtimes: isOvertime,
+                overtimeLoses: gameEndedDuringOvertime,
+                shootouts: isShootout,
+                shootoutloses: isShootout
+            }
+        }, {
+            new: true
+        }, (err, data) => {
+            if (err) return handleError(err);
+
+        });
+        res.sendStatus(204);
+    }
+
+});
+
+
+
+app.post('/addplayer', (req, res) => {
+    req.body.gamesPlayed = 0;
+    req.body.wins = 0;
+    req.body.loses = 0;
+    req.body.goalsFor = 0;
+    req.body.goalsAgainst = 0;
+    req.body.shotsFor = 0;
+    req.body.shotsAgainst = 0;
+    req.body.overtimes = 0;
+    req.body.overtimeWins = 0;
+    req.body.overtimeLoses = 0;
+    req.body.shootouts = 0;
+    req.body.shootoutWins = 0;
+    req.body.shootoutLoses = 0;
+    req.body.homeWins = 0;
+    req.body.homeLoses = 0;
+    req.body.guestWins = 0;
+    req.body.guestLoses = 0;
+    console.log(req.body);
+
+    const newteam = new Team(req.body);
+    newteam.save(function(err) {
+        if (err) {
+            console.log(err);
+            res.send(err);
+        } else {
+            console.log('New team added');
+            res.send(204);
+        }
+    });
+
+});
+
 
 /**
  * @api {get} /team/:team Get one Team
@@ -136,10 +480,12 @@ app.post('/addteam', bodyParser.urlencoded({extend: true}), (req, res) => {
  */
 
 app.get('/team/:team', (req, res) => {
-    Data.find().where({'team' : req.params.team}).exec().then((team) => {
-        if(team.length === 0){
-             res.send('No team named ' + req.params.team + ' found');
-        }else {
+    Team.find().where({
+        'team': req.params.team
+    }).exec().then((team) => {
+        if (team.length === 0) {
+            res.send('No team named ' + req.params.team + ' found');
+        } else {
             res.send(team);
         }
     });
@@ -200,10 +546,10 @@ app.get('/team/:team', (req, res) => {
  */
 
 app.get('/teams', (req, res) => {
-    Data.find().exec().then((teams) => {
-        if(teams.length === 0){
+    Team.find().exec().then((teams) => {
+        if (teams.length === 0) {
             res.send('no teams found');
-        }else {
+        } else {
             res.send(teams);
         }
     });
@@ -266,9 +612,9 @@ app.get('/teams', (req, res) => {
 
 app.get('/morewinsthan/:wins', (req, res) => {
     Data.find().where('wins').gt(req.params.wins).exec().then((teams) => {
-        if(teams.length === 0){
+        if (teams.length === 0) {
             res.send('no teams with more wins than ' + req.params.wins + ' found');
-        }else {
+        } else {
             res.send(teams);
         }
     });
@@ -278,9 +624,7 @@ mongoose.connect(`mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${proc
     console.log('Mongodb connected successfully.');
     app.use(express.static(path.join(__dirname, 'public')));
     app.listen(process.env.APP_PORT);
+    console.log('listening port: ' + process.env.APP_PORT);
 }, err => {
     console.log('Connection to db failed: ' + err);
 });
-
-
-
