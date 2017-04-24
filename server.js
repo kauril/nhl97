@@ -1,15 +1,54 @@
 'use strict';
+// set up ======================================================================
+// get all the tools we need
 const express = require('express');
-const serveStatic = require('serve-static');
+//const serveStatic = require('serve-static');
 const path = require('path');
-const app = express();
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
+//const https = require('https');
+const flash = require('connect-flash');
+const morgan = require('morgan');
+//const http = require('http');
+const fs = require('fs');
+
 mongoose.Promise = global.Promise; //ES6 Promise
 const Schema = mongoose.Schema;
+const session = require('express-session');
+
+const configDB = require('./config/database.js');
+/*const sslkey = fs.readFileSync('ssl-key.pem');
+const sslcert = fs.readFileSync('ssl-cert.pem')*/
+
+const app = express();
+
+/*const options = {
+    key: sslkey,
+    cert: sslcert
+};*/
+
+// configuration ===============================================================
+mongoose.connect(configDB.url); // connect to our database
+
+require('./config/passport')(passport); // pass passport for configuration
+
+// set up our express application
+app.use(morgan('dev')); // log every request to the console
+app.use(cookieParser()); // read cookies (needed for auth)
+app.use(bodyParser.json());// get information from html forms
+app.use(bodyParser.urlencoded({extended: true}));
+
+
+app.set('view engine', 'ejs'); // set up ejs for templating
+
+// required for passport
+app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
+app.use(flash()); // use connect-flash for flash messages stored in session
 
 const teamSchema = new Schema({
     team: {
@@ -136,11 +175,20 @@ const gameSchema = new Schema({
 const Team = mongoose.model('team', teamSchema);
 const Game = mongoose.model('game', gameSchema);
 
-app.use(cookieParser());
+// routes ======================================================================
+require('./app/routes.js')(app, passport, Team, Game); // load our routes and pass in our app and fully configured passport
+
+// launch ======================================================================
+app.listen(process.env.APP_PORT);
+console.log('The magic happens on port ' + process.env.APP_PORT);
+
+
+
+
+
+/*app.use(cookieParser());
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
+
 
 // Authentication
 passport.use(new LocalStrategy(
@@ -148,13 +196,17 @@ passport.use(new LocalStrategy(
         console.log("before everything?");
         console.log(process.env.USERNAME);
         if (username !== process.env.USERNAME || password !== process.env.PASSWORD) {
-            done(null, false, {message: 'Incorrect credentials.'});
+            done(null, false, {
+                message: 'Incorrect credentials.'
+            });
             console.log('failed');
             return;
         }
         console.log('done');
 
-        return done(null, {username: username});
+        return done(null, {
+            username: username
+        });
     }
 ));
 
@@ -162,11 +214,16 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.post('/login',
-    passport.authenticate('local',
-        {failureRedirect: '/login.html', session: false}),
+    passport.authenticate('local', {
+        failureRedirect: '/login.html',
+        session: false
+    }),
     (req, res) => {
 
-        res.cookie('user', req.body.username, {maxAge: 900000, httpOnly: true});
+        res.cookie('user', req.body.username, {
+            maxAge: 900000,
+            httpOnly: true
+        });
         console.log('cookie created successfully');
 
         res.redirect('/index.html');
@@ -177,8 +234,9 @@ app.get('/index.html', (req, res) => {
     console.log('index')
     console.log(req.cookies);
     if (req.cookies.user) {
-        res.sendFile(__dirname +'/public/index.html');
+        res.sendFile(__dirname + '/public/index.html');
     } else {
+        console.log('no user')
         res.redirect('/login.html');
     }
 });
@@ -188,11 +246,11 @@ app.get('/logout', (req, res) => {
     console.log(res.cookies);
     console.log(req.cookies);
     res.clearCookie('user');
-    
+
     console.log(res.cookies);
     console.log(req.cookies);
     res.redirect('/login.html');
-});
+});*/
 
 /**
  * @apiDefine ExampleResult
@@ -620,11 +678,18 @@ app.get('/morewinsthan/:wins', (req, res) => {
     });
 });
 
-mongoose.connect(`mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB}`).then(() => {
+/*mongoose.connect(`    ).then(() => {
     console.log('Mongodb connected successfully.');
     app.use(express.static(path.join(__dirname, 'public')));
-    app.listen(process.env.APP_PORT);
+
+    https.createServer(options, app).listen(process.env.APP_PORT);
+
     console.log('listening port: ' + process.env.APP_PORT);
 }, err => {
     console.log('Connection to db failed: ' + err);
-});
+});*/
+
+/*http.createServer((req, res) => {
+      res.writeHead(301, { 'Location': 'https://localhost:8080' + req.url });
+      res.end();
+}).listen(3000);*/
