@@ -1,0 +1,53 @@
+const teamChars = [{
+    'Colorado': 'g'
+}, {
+    'Dallas': 'i'
+}, {
+    'Detroit': 'i'
+}, {
+    'Edmonton': 'k'
+}, {
+    'Florida': 'l'
+}, {
+    'Hartford': '#'
+}, {
+    'Los_Angeles': 'm'
+}, {
+    'Montreal': 'o'
+}, {
+    'New_Jersey': 'q'
+}, {
+    'NY_Islanders': 'r'
+}, {
+    'NY_Rangers': 's'
+}, {
+    'Ottawa': 't'
+}, {
+    'Philadelphia': 'u'
+}, {
+    'Phoenix': 'v'
+}, {
+    'Pittsburgh': 'w'
+}, {
+    'San_Jose': 'x'
+}, {
+    'ST_Louis': 'y'
+}, {
+    'Tampa_Bay': 'z'
+}, {
+    'Toronto': '6'
+}, {
+    'Vancouver': '7'
+}, {
+    'Washington': '8'
+}, {
+    'Anaheim': '¥'
+}, {
+    'Boston': 'b'
+}, {
+    'Buffalo': 'c'
+}, {
+    'Calgary': 'd'
+}, {
+    'Chicago': 'f'
+}];

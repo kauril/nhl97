@@ -70,7 +70,7 @@ module.exports = function(app, passport, io) {
     }));
 
     // =====================================
-    // PROFILE SECTION =====================
+    // MAIN VIEW(HOME WHEN LOGGED IN) ======
     // =====================================
     // we will want this protected so you have to be logged in to visit
     // we will use route middleware to verify this (the isLoggedIn function)
@@ -81,6 +81,23 @@ module.exports = function(app, passport, io) {
         });
     });
 
+    // =====================================
+    // STATISTICS ==========================
+    // =====================================
+
+    app.get('/teamstatistics', isLoggedIn, (req, res) => {
+        console.log(req.user);
+        res.render('teamstatistics.ejs', {
+            user: req.user
+        });
+    });
+
+    app.get('/overallstatistics', isLoggedIn, (req, res) => {
+        console.log(req.user);
+        res.render('overallstatistics.ejs', {
+            user: req.user
+        });
+    });
 
     // =====================================
     // LOGOUT ==============================
@@ -91,7 +108,7 @@ module.exports = function(app, passport, io) {
     });
 
     // =====================================
-    // TEAMS ==============================
+    // TEAMS ===============================
     // =====================================
     app.get('/teams', (req, res) => {
         Team.find().exec().then((teams) => {
@@ -114,6 +131,25 @@ module.exports = function(app, passport, io) {
             }
         });
     });
+
+    // =====================================
+    // GAMES ===============================
+    // =====================================
+
+    app.get('/games', (req, res) => {
+        Game.find().sort({"_id":-1}).limit(10).exec().then((games) => {
+            if (games.length === 0) {
+                res.send('no games found');
+            } else {
+                res.send(games);
+
+            }
+        });
+    });
+
+    // =====================================
+    // ANDROID POSTS =======================
+    // =====================================
 
     app.post('/addgame', (req, res) => {
         console.log(req.body);
@@ -150,7 +186,7 @@ module.exports = function(app, passport, io) {
 
         if (req.body.homeGoals > req.body.guestGoals) {
 
-
+            //Winning team is home team
             //Updating winning team
 
             Team.findOneAndUpdate({
@@ -192,7 +228,7 @@ module.exports = function(app, passport, io) {
                     overtimes: isOvertime,
                     overtimeLoses: gameEndedDuringOvertime,
                     shootouts: isShootout,
-                    shootoutloses: isShootout
+                    shootoutLoses: isShootout
                 }
             }, {
                 new: true
@@ -201,7 +237,7 @@ module.exports = function(app, passport, io) {
 
             });
 
-            io.sockets.emit('message', 'winning home' + req.body.homeTeam);
+            io.sockets.emit('newgame    ', 'winning home' + req.body.homeTeam);
             console.log('emitting above');
             res.sendStatus(204);
 
@@ -209,7 +245,7 @@ module.exports = function(app, passport, io) {
 
             //Winning team is guest team
             //Updating winning team
-
+            console.log(isShootout);    
             Team.findOneAndUpdate({
                 'team': req.body.guestTeam
             }, {
@@ -249,7 +285,7 @@ module.exports = function(app, passport, io) {
                     overtimes: isOvertime,
                     overtimeLoses: gameEndedDuringOvertime,
                     shootouts: isShootout,
-                    shootoutloses: isShootout
+                    shootoutLoses: isShootout
                 }
             }, {
                 new: true
@@ -259,7 +295,7 @@ module.exports = function(app, passport, io) {
             });
 
 
-            io.sockets.emit('message', 'winning guest' + req.body.guestTeam);
+            io.sockets.emit('newgame', 'winning guest');
             console.log('emitting above');
             res.sendStatus(204);
         }
@@ -293,6 +329,7 @@ module.exports = function(app, passport, io) {
                 res.send(err);
             } else {
                 console.log('New team added');
+                io.sockets.emit('newteam', req.body);
                 res.sendStatus(204);
             }
         });

@@ -2,17 +2,51 @@
 
 #header {
     margin-top: 50px;
+    text-align: center;
+}
+.nhl-font{
+	font-family: nhl;
 }
 
 .statistics {
-    margin-top: 200px;
+    margin: auto;
 }
 
 #team{
     font-family: nhl;
-    font-size: 400px;
+    font-size: 100%;
 }
 
 #chooseTeam{
     margin-top: 50px;
+}
+
+.team-item{
+    font-family: nhl;
+    font-size: 100px;
+}
+
+.carousel-inner{
+  width:50%;
+  margin:auto;
+  max-height: 200px !important;
+}
+
+.teamChar{
+  margin:auto;
+}
+.title{
+	text-align: right;
+}
+
+.carousel-control-next, .carousel-control-prev {
+    background-color: darkgray;
+}
+.carousel{
+	width: 50%;
+	margin: auto;
+}
+
+.games {
+	margin-top: 30px;
 }
