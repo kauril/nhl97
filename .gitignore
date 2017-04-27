@@ -39,3 +39,5 @@ jspm_packages
 .env
 
 .idea
+
+.DS_Store

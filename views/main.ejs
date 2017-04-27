@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="main.css">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+</head>
+<body>
+<nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="#">Navbar</a>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Statistics
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <a class="dropdown-item" href="#">Overall</a>
+                    <a class="dropdown-item" href="#">Team</a>
+                    <a class="dropdown-item" href="#">Compare teams</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+    
+    <a href="/logout" class="btn btn-default btn-sm">Logout</a>
+
+
+</nav>
+<!--  <p>
+                        <strong>id</strong>: <%= user._id %><br>
+                        <strong>email</strong>: <%= user.local.email %><br>
+                        <strong>password</strong>: <%= user.local.password %>
+                    </p> -->
+                    <button id="test" class="btn">test</button>
+<div class="container">
+    
+    <div class="dropdown" id="chooseTeam">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Choose team
+        </button>
+        <div class="dropdown-menu" id="teamDropdown" aria-labelledby="dropdownMenuButton">
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6"> 
+            <h1 id="header">Team Statistics</h1>
+            <div id="team" >
+
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="statistics title">
+
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="statistics stats">
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- jQuery first, then Tether, then Bootstrap JS. -->
+<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.12/jquery.mousewheel.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
+<script type="text/javascript" src="/main.js"></script>
+<script type="text/javascript">
+const socket = io.connect('https://localhost:8080', {secure: true});
+socket.on('message', function (msg) {
+        console.log('below message retrieved by client');
+        console.log(msg);
+});
+const testBTN = document.querySelector('#test');
+testBTN.addEventListener('click', () => {
+    console.log('click');
+    socket.emit('message', 'this is a message send by client');
+});
+
+
+
+</script>
+
+
+</body>
+</html>
