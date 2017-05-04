@@ -80,7 +80,9 @@ const teamSchema = mongoose.Schema({
     guestLoses: {
         type: Number,
         required: true
-    }
+    },
+    otherTeams: []
+    
 });
 
 // create the model for users and expose it to our app

@@ -43,43 +43,57 @@ NHL
 </nav>
 
 <div class="container">
-    <h1 id="header" class="nhl-font">OVERALL STATISTICS</h1>
-    <div id="sortCarousel" class="carousel slide" data-interval="false">
-  <div class="carousel-inner" role="listbox">
-    <div class="carousel-item active sort-item" value="wins"><p class="sort-param">WINS</p></div>
-    <div class="carousel-item sort-item" value="loses"><p class="sort-param">LOSES</p></div>
-    <div class="carousel-item sort-item" value="goalsFor"><p class="sort-param">GOALS FOR</p></div>
-    <div class="carousel-item sort-item" value="goalsAgainst"><p class="sort-param">GOALS AGAINST</p></div>
-    <div class="carousel-item sort-item" value="shotsFor"><p class="sort-param">SHOTS FOR</p></div>
-    <div class="carousel-item sort-item" value="shotsAgainst"><p class="sort-param">SHOTS AGAINST</p></div>
+    <h1 id="header" class="nhl-font">COMPARE TWO TEAMS</h1>
+    <div class="row statistics">
+    
+    
+    <div id="teamCarousel1" class="carousel slide" data-interval="false">
+  <div class="carousel-inner" id="carousel1" role="listbox">
+    
     
   </div>
-  <a class="carousel-control-prev" href="#sortCarousel" role="button" data-slide="prev">
+  <a class="carousel-control-prev" href="#teamCarousel1" role="button" data-slide="prev">
     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
     <span class="sr-only">Previous</span>
   </a>
-  <a class="carousel-control-next" href="#sortCarousel" role="button" data-slide="next">
+  <a class="carousel-control-next" href="#teamCarousel1" role="button" data-slide="next">
     <span class="carousel-control-next-icon" aria-hidden="true"></span>
     <span class="sr-only">Next</span>
   </a>
 </div>
-    <div class="row overall-statistics">
-        <table class="table">
+
+        
+        <div class="row">
+        <table class="table comparisonTable">
         <thead class="thead-inverse">
     <tr>
-      <th>Team</th>
-      <th>Wins</th>
-      <th>Loses</th>
-      <th>Goals For</th>
-      <th>Goals Against</th>
-      <th>Shots For</th>
-      <th>Shots Against</th>
+      <th id="teamOnLeft"></th>
+      <th id="statisticHeader">Statistic</th>
+      <th id="teamOnRight"></th>
+      
     </tr>
   </thead>
-  <tbody class="overall-table-body">
+  <tbody class="compare-table-body">
     </tbody>
 </table>
+        
     </div>
+    
+<div id="teamCarousel2" class="carousel slide" data-interval="false">
+  <div class="carousel-inner" id="carousel2" role="listbox">
+    
+    
+  </div>
+  <a class="carousel-control-prev" href="#teamCarousel2" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#teamCarousel2" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div>
+   </div> 
 </div>
 <!-- jQuery first, then Tether, then Bootstrap JS. -->
 <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
@@ -88,7 +102,8 @@ NHL
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
-<script type="text/javascript" src="/js/overall_statistics.js"></script>
+<script type="text/javascript" src="/js/compare_two_teams.js"></script>
+
 
 
 </body>

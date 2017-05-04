@@ -1,32 +1,24 @@
+'use strict';
 const Team = require('./models/team.js');
 const Game = require('./models/game.js');
+const functions = require('./models/functions.js');
 
-module.exports = function(app, passport, io) {
+module.exports = (app, passport, io) => {
 
-    io.on('connection', function(socket) {
-
-
-        socket.on('disconnect', function() {
+    io.on('connection', (socket) => {
+        socket.on('disconnect', () => {
             console.log('user disconnected');
             socket.rooms;
         });
-        socket.on('message', function(msg) {
-            console.log('message coming from client');
-            console.log(msg);
-
+        socket.on('message', (msg) => {   
             socket.emit('message', 'this is a message send by server');
-
         });
     });
-
-
 
     // =====================================
     // HOME PAGE (with login links) ========
     // =====================================
     app.get('/', (req, res) => {
-        console.log('in a root');
-
         res.render('index.ejs'); // load the index.ejs file
     });
 
@@ -72,6 +64,7 @@ module.exports = function(app, passport, io) {
     // =====================================
     // MAIN VIEW(HOME WHEN LOGGED IN) ======
     // =====================================
+
     // we will want this protected so you have to be logged in to visit
     // we will use route middleware to verify this (the isLoggedIn function)
     app.get('/main', isLoggedIn, (req, res) => {
@@ -99,9 +92,24 @@ module.exports = function(app, passport, io) {
         });
     });
 
+     app.get('/compare_two_teams', isLoggedIn, (req, res) => {
+        console.log(req.user);
+        res.render('compareTwoTeams.ejs', {
+            user: req.user
+        });
+    });
+
+     app.get('/images', isLoggedIn, (req, res) => {
+        console.log(req.user);
+        res.render('images.ejs', {
+            user: req.user
+        });
+    });
+
     // =====================================
     // LOGOUT ==============================
     // =====================================
+
     app.get('/logout', (req, res) => {
         req.logout();
         res.redirect('/');
@@ -110,6 +118,7 @@ module.exports = function(app, passport, io) {
     // =====================================
     // TEAMS ===============================
     // =====================================
+
     app.get('/teams', (req, res) => {
         Team.find().exec().then((teams) => {
             if (teams.length === 0) {
@@ -121,6 +130,7 @@ module.exports = function(app, passport, io) {
     });
 
     app.get('/team/:team', (req, res) => {
+        console.log(req.params.team);
         Team.find().where({
             'team': req.params.team
         }).exec().then((team) => {
@@ -132,12 +142,27 @@ module.exports = function(app, passport, io) {
         });
     });
 
+    app.get('/overall_statistics/:param', (req, res) => {
+        const query = {};
+        query[req.params.param] = -1;
+        Team.find().sort(query).limit(10).exec().then((result) => {
+            if (result.length === 0) {
+                res.send('No statistics with argument ' + req.params + ' found');
+            } else {
+                res.send(result);
+            }
+        });
+
+    });
+
     // =====================================
     // GAMES ===============================
     // =====================================
 
     app.get('/games', (req, res) => {
-        Game.find().sort({"_id":-1}).limit(10).exec().then((games) => {
+        Game.find().sort({
+            "_id": -1
+        }).limit(10).exec().then((games) => {
             if (games.length === 0) {
                 res.send('no games found');
             } else {
@@ -152,191 +177,47 @@ module.exports = function(app, passport, io) {
     // =====================================
 
     app.post('/addgame', (req, res) => {
-        console.log(req.body);
 
-
-        //Game resul is added to db
-        Game.create(req.body).then(post => {
-            console.log('game added');
-        });
-
+        // Adding game to db
+        functions.addGame(req.body);
+        
         //Declaring variables to update overtime/shootout data
-
-        let isOvertime = 0;
-        let gameEndedDuringOvertime = 0
-        let isShootout = 0;
-
-        // Checking if game went to overtime...
-
-        if (req.body.isOvertime === 'true') {
-            isOvertime = 1;
-            gameEndedDuringOvertime = 1;
-
-            //...if so checking if there were shootouts
-            if (req.body.isShootout === 'true') {
-                console.log('isShootout')
-                isShootout = 1;
-                gameEndedDuringOvertime = 0;
-            }
-        } else {
-            console.log('noOvertime')
-        }
+        let isOvertime = functions.checkIfOvertime(req.body);
+        let isShootout = functions.checkIfShootout(req.body);
+        let gameEndedDuringOvertime = functions.checkIfGameEndedDuringOvertime(isOvertime, isShootout);
 
         //Checking if home team won
-
         if (req.body.homeGoals > req.body.guestGoals) {
 
             //Winning team is home team
             //Updating winning team
-
-            Team.findOneAndUpdate({
-                'team': req.body.homeTeam
-            }, {
-                $inc: {
-                    gamesPlayed: 1,
-                    wins: 1,
-                    homeWins: 1,
-                    goalsFor: req.body.homeGoals,
-                    goalsAgainst: req.body.guestGoals,
-                    shotsFor: req.body.homeShots,
-                    shotsAgainst: req.body.guestShots,
-                    overtimes: isOvertime,
-                    overtimeWins: gameEndedDuringOvertime,
-                    shootouts: isShootout,
-                    shootoutWins: isShootout
-                }
-            }, {
-                new: true
-            }, (err, data) => {
-                if (err) return handleError(err);
-
-            });
+            functions.updateWinningHomeTeam(req.body, isOvertime, isShootout, gameEndedDuringOvertime);
 
             //Updating losing team
+            functions.updateLosingGuestTeam(req.body, isOvertime, isShootout, gameEndedDuringOvertime);
 
-            Team.findOneAndUpdate({
-                'team': req.body.guestTeam
-            }, {
-                $inc: {
-                    gamesPlayed: 1,
-                    loses: 1,
-                    guestLoses: 1,
-                    goalsFor: req.body.guestGoals,
-                    goalsAgainst: req.body.homeGoals,
-                    shotsFor: req.body.guestShots,
-                    shotsAgainst: req.body.homeShots,
-                    overtimes: isOvertime,
-                    overtimeLoses: gameEndedDuringOvertime,
-                    shootouts: isShootout,
-                    shootoutLoses: isShootout
-                }
-            }, {
-                new: true
-            }, (err, data) => {
-                if (err) return handleError(err);
-
-            });
-
-            io.sockets.emit('newgame    ', 'winning home' + req.body.homeTeam);
-            console.log('emitting above');
+            io.sockets.emit('newgame', 'winning home' + req.body.homeTeam);
             res.sendStatus(204);
 
         } else {
 
             //Winning team is guest team
             //Updating winning team
-            console.log(isShootout);    
-            Team.findOneAndUpdate({
-                'team': req.body.guestTeam
-            }, {
-                $inc: {
-                    gamesPlayed: 1,
-                    wins: 1,
-                    guestWins: 1,
-                    goalsFor: req.body.guestGoals,
-                    goalsAgainst: req.body.homeGoals,
-                    shotsFor: req.body.guestShots,
-                    shotsAgainst: req.body.homeShots,
-                    overtimes: isOvertime,
-                    overtimeWins: gameEndedDuringOvertime,
-                    shootouts: isShootout,
-                    shootoutWins: isShootout
-                }
-            }, {
-                new: true
-            }, (err, data) => {
-                if (err) return handleError(err);
-
-            });
+            functions.updateWinningGuestTeam(req.body, isOvertime, isShootout, gameEndedDuringOvertime);
 
             //Updating losing team
-
-            Team.findOneAndUpdate({
-                'team': req.body.homeTeam
-            }, {
-                $inc: {
-                    gamesPlayed: 1,
-                    loses: 1,
-                    homeLoses: 1,
-                    goalsFor: req.body.homeGoals,
-                    goalsAgainst: req.body.guestGoals,
-                    shotsFor: req.body.homeShots,
-                    shotsAgainst: req.body.guestShots,
-                    overtimes: isOvertime,
-                    overtimeLoses: gameEndedDuringOvertime,
-                    shootouts: isShootout,
-                    shootoutLoses: isShootout
-                }
-            }, {
-                new: true
-            }, (err, data) => {
-                if (err) return handleError(err);
-
-            });
-
+            functions.updateLosingHomeTeam(req.body, isOvertime, isShootout, gameEndedDuringOvertime);
 
             io.sockets.emit('newgame', 'winning guest');
-            console.log('emitting above');
             res.sendStatus(204);
         }
 
     });
 
+    //Add new team with a player to the db
     app.post('/addplayer', (req, res) => {
-        req.body.gamesPlayed = 0;
-        req.body.wins = 0;
-        req.body.loses = 0;
-        req.body.goalsFor = 0;
-        req.body.goalsAgainst = 0;
-        req.body.shotsFor = 0;
-        req.body.shotsAgainst = 0;
-        req.body.overtimes = 0;
-        req.body.overtimeWins = 0;
-        req.body.overtimeLoses = 0;
-        req.body.shootouts = 0;
-        req.body.shootoutWins = 0;
-        req.body.shootoutLoses = 0;
-        req.body.homeWins = 0;
-        req.body.homeLoses = 0;
-        req.body.guestWins = 0;
-        req.body.guestLoses = 0;
-        console.log(req.body);
-
-        const newteam = new Team(req.body);
-        newteam.save(function(err) {
-            if (err) {
-                console.log(err);
-                res.send(err);
-            } else {
-                console.log('New team added');
-                io.sockets.emit('newteam', req.body);
-                res.sendStatus(204);
-            }
-        });
-
+        functions.addNewTeam(req.body, io, res);
     });
-
-
 };
 
 // route middleware to make sure a user is logged in
@@ -349,3 +230,4 @@ const isLoggedIn = (req, res, next) => {
     // if they aren't redirect them to the home page
     res.redirect('/');
 }
+

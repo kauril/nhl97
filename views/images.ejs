@@ -14,7 +14,12 @@
     <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <a class="navbar-brand" href="#">Navbar</a>
+    <a class="navbar-brand" href="/main"><span class="nhl-font">
+NHL
+</span>
+<span >
+97
+</span></a>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
         <ul class="navbar-nav">
 
@@ -23,52 +28,34 @@
                     Statistics
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                    <a class="dropdown-item" href="#">Overall</a>
-                    <a class="dropdown-item" href="#">Team</a>
-                    <a class="dropdown-item" href="#">Compare teams</a>
+                    <a class="dropdown-item" href="/overallstatistics">Overall</a>
+                    <a class="dropdown-item" href="/teamstatistics">Team</a>
+                    <a class="dropdown-item" href="/compare_two_teams">Compare teams</a>
                 </div>
             </li>
+            <li><a href="/images" class="nav-link">F.G.T.</a></li>
         </ul>
     </div>
-    <a href="/logout">
-    <button id="logout" class="btn btn-primary">Logout</button>
-</a>
+    <a href="/logout" class="btn btn-default btn-sm">Logout</a>
 </nav>
 
 <div class="container">
-    <div class="dropdown" id="chooseTeam">
-        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Choose team
-        </button>
-        <div class="dropdown-menu" id="teamDropdown" aria-labelledby="dropdownMenuButton">
-
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-6">
-            <h1 id="header">Team Statistics</h1>
-            <div id="team" >
-
-            </div>
-        </div>
-        <div class="col-3">
-            <div class="statistics title">
-
-            </div>
-        </div>
-        <div class="col-3">
-            <div class="statistics stats">
-
-            </div>
-        </div>
-    </div>
+    <h1 id="header" class="nhl-font">F.G.T.</h1>
+    <div class="row images">
+        
+    </div>   
 </div>
+<script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.9.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
 <!-- jQuery first, then Tether, then Bootstrap JS. -->
 <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.12/jquery.mousewheel.js"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
-<script src="main.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
+<script type="text/javascript" src="/js/team_characters.js"></script>
+<script type="text/javascript" src="/js/images.js"></script>
 </body>
 </html>

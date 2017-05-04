@@ -28,7 +28,7 @@ socket.on('newgame', function(msg) {
     });
 
 });
-socket.on('newteam', function(team) {
+socket.on('newteam', (team) => {
     teamData.push(team);
     addNewTeamToCarousel(team);
 });
@@ -83,7 +83,7 @@ const populateViewWithTeamStatistics = (team) => {
     for (let key in team) {
         if (team.hasOwnProperty(key)) {
 
-            if (key != '_id' && key != '__v') {
+            if (key != '_id' && key != '__v' && key !='otherTeams' && key !='teamChar') {
                 const titleElem = document.createElement('p');
                 titleElem.innerHTML = key;
                 title.appendChild(titleElem);

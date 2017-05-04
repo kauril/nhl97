@@ -26,13 +26,23 @@
     font-size: 100px;
 }
 
+.sort-item{
+    font-family: nhl;
+    font-size: 20px;
+}
+
 .carousel-inner{
   width:50%;
   margin:auto;
   max-height: 200px !important;
 }
 
-.teamChar{
+#teamCarousel1, #teamCarousel2{
+  width: 20%;
+  margin: 0px auto 34%;
+}
+
+.teamChar, .sort-param{
   margin:auto;
 }
 .title{
@@ -41,12 +51,61 @@
 
 .carousel-control-next, .carousel-control-prev {
     background-color: darkgray;
+    max-height: 150px;
 }
 .carousel{
 	width: 50%;
 	margin: auto;
 }
 
-.games {
+.games, .overall-statistics {
 	margin-top: 30px;
+}
+
+#teamOnLeft{
+  text-align: center;
+  width: 33%;
+}
+#statisticHeader{
+  text-align: center;
+  width: 33%;
+}
+#teamOnRight{
+  text-align: center;
+  width: 33%;
+}
+
+.compare-table-body {
+    text-align: center;
+}
+
+.row {
+  margin-top: 30px;
+}
+
+.comparisonTable{
+  min-width: 409px;
+}
+
+/*Image Gallery*/
+
+div.gallery {
+    margin: 5px;
+    border: 1px solid #ccc;
+    float: left;
+    width: 300px;
+}
+
+div.gallery:hover {
+    border: 5px solid #777;
+}
+
+div.gallery img {
+    width: 100%;
+    height: auto;
+}
+
+div.desc {
+    padding: 15px;
+    text-align: center;
 }
