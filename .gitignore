@@ -38,6 +38,8 @@ jspm_packages
 
 .env
 
+firebase_admin_sdk.json
+
 /.idea
 
 .DS_Store

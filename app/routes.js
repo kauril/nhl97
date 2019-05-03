@@ -2,6 +2,18 @@
 const Team = require('./models/team.js');
 const Game = require('./models/game.js');
 const functions = require('./models/functions.js');
+var admin = require("firebase-admin");
+
+var serviceAccount = require("../firebase_admin_sdk.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://nhl97-db00e.firebaseio.com"
+});
+
+var db = admin.database();
+var ref = db.ref("Seasoncreated: 03-02-2018 10:16:25/urls");
+
 
 module.exports = (app, passport, io) => {
 
@@ -105,6 +117,12 @@ module.exports = (app, passport, io) => {
             user: req.user
         });
     });
+
+    app.get('/firebase', isLoggedIn, (req,res) => {
+        ref.once("value", function(snapshot) {
+            res.send(JSON.stringify(snapshot.val()))
+        });
+    })
 
     // =====================================
     // LOGOUT ==============================
@@ -216,6 +234,7 @@ module.exports = (app, passport, io) => {
 
     //Add new team with a player to the db
     app.post('/addplayer', (req, res) => {
+     
         functions.addNewTeam(req.body, io, res);
     });
 };

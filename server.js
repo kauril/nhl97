@@ -33,7 +33,7 @@ const options = {
 
 
 // configuration ===============================================================
-mongoose.connect(configDB.url); // connect to our database
+mongoose.connect('mongodb+srv://kauri:m0ng0db!@cluster0-dguaw.mongodb.net/test?retryWrites=true); // connect to our database')
 
 require('./config/passport')(passport); // pass passport for configuration
 
@@ -80,7 +80,7 @@ socketServer.listen(8080);
       res.end();
 }).listen(3000);*/
 
-console.log('The magic happens on port ' + process.env.APP_PORT);
+console.log('The magic happens on port 8080');
 
 
 
